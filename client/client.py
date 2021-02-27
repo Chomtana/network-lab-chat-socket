@@ -35,7 +35,7 @@ class GUI:
                              height = 300) 
         # create a Label 
         self.pls = Label(self.login,  
-                       text = "Please login to continue", 
+                       text = "Enter your name", 
                        justify = CENTER,  
                        font = "Helvetica 14 bold") 
           
@@ -69,24 +69,27 @@ class GUI:
         self.go = Button(self.login, 
                          text = "CONTINUE",  
                          font = "Helvetica 14 bold",  
-                         command = lambda: self.goAhead(self.entryName.get())) 
+                         highlightbackground='#9D800B',
+                         command = lambda: self.performLogin(self.entryName.get())) 
           
         self.go.place(relx = 0.4, 
                       rely = 0.55) 
         self.Window.mainloop() 
   
-    def goAhead(self, name): 
+    def performLogin(self, name): 
         self.login.destroy() 
         self.layout(name) 
-          
+
+        # FOCUSING POINT
+        client.send(name.encode(ENCODING))
+        
+        # FOCUSING POINT
         # the thread to receive messages 
         rcv = threading.Thread(target=self.receive) 
         rcv.start() 
   
     # The main layout of the chat 
     def layout(self,name):
-        client.send(name.encode(ENCODING))
-        
         self.name = name 
         # to show chat window 
         self.Window.deiconify() 
@@ -95,9 +98,9 @@ class GUI:
                               height = False) 
         self.Window.configure(width = 470, 
                               height = 550, 
-                              bg = "#17202A") 
+                              bg = "#9D800B") 
         self.labelHead = Label(self.Window, 
-                             bg = "#17202A",  
+                             bg = "#9D800B",  
                               fg = "#EAECEE", 
                               text = self.name , 
                                font = "Helvetica 13 bold", 
@@ -115,7 +118,7 @@ class GUI:
         self.textCons = Text(self.Window, 
                              width = 20,  
                              height = 2, 
-                             bg = "#17202A", 
+                             bg = "#9D800B", 
                              fg = "#EAECEE", 
                              font = "Helvetica 14",  
                              padx = 5, 
@@ -133,7 +136,7 @@ class GUI:
                                rely = 0.825) 
           
         self.entryMsg = Entry(self.labelBottom, 
-                              bg = "#2C3E50", 
+                              bg = "#9D800B", 
                               fg = "#EAECEE", 
                               font = "Helvetica 13") 
           
@@ -151,7 +154,7 @@ class GUI:
                                 text = "Send", 
                                 font = "Helvetica 10 bold",  
                                 width = 20, 
-                                bg = "#ABB2B9", 
+                                highlightbackground = "#9D800B", 
                                 command = lambda : self.sendButton(self.entryMsg.get())) 
           
         self.buttonMsg.place(relx = 0.77, 
@@ -174,22 +177,24 @@ class GUI:
         self.textCons.config(state = DISABLED) 
   
     # function to basically start the thread for sending messages 
-    def sendButton(self, msg): 
+    def sendButton(self, msg):
         self.textCons.config(state = DISABLED) 
         self.msg=msg 
-        self.entryMsg.delete(0, END) 
+        self.entryMsg.delete(0, END)
+        # FOCUSING POINT
         snd= threading.Thread(target = self.sendMessage) 
         snd.start() 
   
     # function to receive messages 
-    def receive(self): 
+    def receive(self):
+        # FOCUSING POINT
         while True: 
-            try: 
-                message = client.recv(1024).decode(ENCODING) 
+            try:
+                message = client.recv(1024).decode(ENCODING)
                   
                 self.textCons.config(state = NORMAL) 
                 self.textCons.insert(END, 
-                                      message+"\n\n") 
+                                      message+"\n") 
                   
                 self.textCons.config(state = DISABLED) 
                 self.textCons.see(END) 
@@ -204,6 +209,7 @@ class GUI:
         self.textCons.config(state=DISABLED) 
         while True: 
             message = self.msg
+            # FOCUSING POINT
             client.send(message.encode(ENCODING))     
             break    
   
