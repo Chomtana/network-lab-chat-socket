@@ -17,7 +17,6 @@ def client_handler(conn, addr):
     username = conn.recv(2048).decode('utf8')
     print("LOGIN", username)
 
-    # conn.send("Welcome".encode('utf8'))
     while True:  
         try:  
             message = conn.recv(2048)  
@@ -34,7 +33,7 @@ def client_handler(conn, addr):
 def broadcast(message, username, connection):  
     for client in clients:
         try:
-            targetMessage = "[" + username + "] " + message.decode('utf8')
+            targetMessage = "[" + username + "] " + message.decode('utf8') + "\n"
             client.send(targetMessage.encode('utf8'))  
             print("SEND", targetMessage)
         except Exception as e:
@@ -43,16 +42,16 @@ def broadcast(message, username, connection):
             client.close()
             remove(client) # If sending failed -> Remove connection  
 
-def remove(connection):  
-    if connection in clients:  
-        clients.remove(connection)
+def remove(client):  
+    if client in clients:  
+        clients.remove(client)
 
 print("SERVER LISTENING ON PORT", PORT)  
 
 while True:
     conn, addr = server.accept()  
     clients.append(conn)
-    print (addr[0] + " Connected !!!") 
+    print(addr[0] + " Connected !!!") 
     threading.Thread(target=client_handler, args=(conn,addr)).start()  
   
 conn.close()  

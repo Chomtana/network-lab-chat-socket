@@ -174,7 +174,9 @@ class GUI:
           
         scrollbar.config(command = self.textCons.yview) 
           
-        self.textCons.config(state = DISABLED) 
+        self.textCons.config(state = DISABLED)
+        self.textCons.delete(1.0, END)
+        self.textCons.insert(END, "")
   
     # function to basically start the thread for sending messages 
     def sendButton(self, msg):
@@ -191,10 +193,12 @@ class GUI:
         while True: 
             try:
                 message = client.recv(1024).decode(ENCODING)
+
+                print("RECEIVED", message)
                   
-                self.textCons.config(state = NORMAL) 
+                self.textCons.config(state = NORMAL)
                 self.textCons.insert(END, 
-                                      message+"\n") 
+                                    message) 
                   
                 self.textCons.config(state = DISABLED) 
                 self.textCons.see(END) 
